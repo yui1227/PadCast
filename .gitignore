@@ -1,0 +1,7 @@
+PadCast.app/
+build/
+*.zip
+build.log
+debug.log
+.DS_Store
+iPadCapture.app/
