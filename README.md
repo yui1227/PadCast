@@ -47,7 +47,7 @@ xattr -dr com.apple.quarantine PadCast.app
 
 ## 自動建置
 
-`.github/workflows/build.yml`：每次 push 到 `main` 都會在 macOS runner 上編譯，結果在該次 Actions 的 Artifacts。推送 `v` 開頭的 tag（例如 `git tag v1.0 && git push --tags`）會自動發佈 Release 並附上 `PadCast.zip`。
+`.github/workflows/build.yml`：每次 push 到 `main` 都會在 macOS runner 上編譯，結果在該次 Actions 的 Artifacts。推送 `v` 開頭的 tag（例如 `git tag v1.0 && git push --tags`）會自動發佈 Release 並附上 `PadCast.zip`；直接在 GitHub 網頁上發佈 Release 也會自動建置並附上 zip。
 
 ## 注意事項
 

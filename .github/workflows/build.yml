@@ -5,6 +5,8 @@ on:
     branches: [main]
     tags: ["v*"]
   pull_request:
+  release:
+    types: [published]   # 在 GitHub 網頁或 API 發佈 Release 時也會自動建置並附上 zip
   workflow_dispatch:
 
 permissions:
@@ -31,7 +33,7 @@ jobs:
           path: PadCast.zip
 
       - name: Release (tag v*)
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: PadCast.zip
