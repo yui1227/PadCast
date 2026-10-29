@@ -24,6 +24,13 @@ jobs:
           ./build.sh
           lipo -archs PadCast.app/Contents/MacOS/PadCast
 
+      - name: Engine tests
+        # GitHub 的 macOS 虛擬機不一定有硬體編碼器（特別是 HEVC），測試失敗不擋建置
+        continue-on-error: true
+        run: |
+          chmod +x Tests/run-tests.sh
+          ./Tests/run-tests.sh
+
       - name: Zip
         run: ditto -c -k --keepParent PadCast.app PadCast.zip
 
