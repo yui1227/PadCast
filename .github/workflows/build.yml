@@ -27,6 +27,7 @@ jobs:
       - name: Engine tests
         # GitHub 的 macOS 虛擬機不一定有硬體編碼器（特別是 HEVC），測試失敗不擋建置
         continue-on-error: true
+        timeout-minutes: 5   # 虛擬機的編碼器偶爾會卡住，超時就略過，不擋建置
         run: |
           chmod +x Tests/run-tests.sh
           ./Tests/run-tests.sh
