@@ -209,6 +209,19 @@ extension AppDelegate {
             m.addItem(it)
         }
         func arrow(_ k: Int) -> String { String(Character(UnicodeScalar(k)!)) }
+        /// 一組單選的子選單（勾選狀態在 validateMenuItem 依 tag 決定）
+        func submenu(_ m: NSMenu, _ title: String, _ sel: Selector, _ options: [(String, Int)]) {
+            let parent = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+            let sub = NSMenu(title: title)
+            for (name, tag) in options {
+                let it = NSMenuItem(title: name, action: sel, keyEquivalent: "")
+                it.tag = tag
+                it.target = self
+                sub.addItem(it)
+            }
+            parent.submenu = sub
+            m.addItem(parent)
+        }
 
         menu("錄影") { m in
             add(m, "開始／停止錄影", #selector(toggleRecord(_:)), "r")
@@ -216,7 +229,14 @@ extension AppDelegate {
             add(m, "截圖", #selector(screenshot(_:)), "s", [.command, .shift])
             m.addItem(.separator())
             add(m, "重播緩衝", #selector(toggleReplay(_:)), "")
+            submenu(m, "重播長度", #selector(selectReplayLength(_:)),
+                    Prefs.replayChoices.map { ($0 < 60 ? "\($0) 秒" : "\($0 / 60) 分鐘", $0) })
             add(m, "錄麥克風", #selector(toggleMic(_:)), "")
+            m.addItem(.separator())
+            submenu(m, "編碼", #selector(selectCodec(_:)), [("H.264（相容性最好）", 0), ("HEVC（檔案約小一半）", 1)])
+            submenu(m, "幀率", #selector(selectFPS(_:)), [("30 fps", 30), ("60 fps", 60)])
+            submenu(m, "畫質", #selector(selectQuality(_:)),
+                    EncodeConfig.qualityNames.enumerated().map { ($1, $0) })
             m.addItem(.separator())
             add(m, "打開輸出資料夾", #selector(openOutputFolder(_:)), "o", [.command, .shift])
         }

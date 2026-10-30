@@ -314,6 +314,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         if Prefs.micEnabled { setStatus("麥克風已開啟（下一次錄影起生效）") }
     }
 
+    // 選單裡的畫質選項（tag 存選項值）
+    @objc func selectCodec(_ sender: NSMenuItem) {
+        var e = Prefs.encode; e.hevc = sender.tag == 1; Prefs.encode = e
+        applySettings(); setStatus("已改為 \(Prefs.encode.summary)（下一次錄影起生效）")
+    }
+    @objc func selectFPS(_ sender: NSMenuItem) {
+        var e = Prefs.encode; e.fps = Int32(sender.tag); Prefs.encode = e
+        applySettings(); setStatus("已改為 \(Prefs.encode.summary)（下一次錄影起生效）")
+    }
+    @objc func selectQuality(_ sender: NSMenuItem) {
+        var e = Prefs.encode; e.quality = sender.tag; Prefs.encode = e
+        applySettings(); setStatus("已改為 \(Prefs.encode.summary)（下一次錄影起生效）")
+    }
+    @objc func selectReplayLength(_ sender: NSMenuItem) {
+        Prefs.replaySeconds = sender.tag
+        applySettings(); setStatus("重播緩衝改為最近 \(replayLengthText)")
+    }
+
     @objc func openOutputFolder(_ sender: Any?) {
         NSWorkspace.shared.open(outputDirectory)
     }
@@ -324,6 +342,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         case #selector(toggleMic(_:)): item.state = Prefs.micEnabled ? .on : .off
         case #selector(toggleReplay(_:)): item.state = Prefs.replayEnabled ? .on : .off
         case #selector(toggleMute(_:)): item.state = Prefs.monitorOn ? .off : .on
+        case #selector(selectCodec(_:)): item.state = (Prefs.encode.hevc ? 1 : 0) == item.tag ? .on : .off
+        case #selector(selectFPS(_:)): item.state = Int(Prefs.encode.fps) == item.tag ? .on : .off
+        case #selector(selectQuality(_:)): item.state = Prefs.encode.quality == item.tag ? .on : .off
+        case #selector(selectReplayLength(_:)): item.state = Prefs.replaySeconds == item.tag ? .on : .off
         case #selector(saveReplay(_:)): return Prefs.replayEnabled && !isSavingReplay
         case #selector(rotateLeft(_:)), #selector(rotateRight(_:)): return !isRecording
         default: break
