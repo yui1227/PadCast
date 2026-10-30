@@ -228,7 +228,12 @@ final class Recorder: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
         guard micOn else { return }
         if !micOffset.isValid {
             guard ptsOffset.isValid else { return }
-            micOffset = ptsOffset   // 固定下來，避免每格抖動造成時間倒退
+            // 麥克風與 iPad 不一定用同一個時鐘：各自量出「時間戳 − 主機時鐘」再換算。
+            // 只在第一個樣本量一次就固定，避免每格抖動造成時間倒退
+            let micClock = CMTimeSubtract(CMSampleBufferGetPresentationTimeStamp(sb), hostNow())
+            micOffset = CMTimeSubtract(ptsOffset, micClock)
+            debugLog(String(format: "麥克風對時：iPad 時鐘差 %.3fs、麥克風時鐘差 %.3fs、修正 %.3fs",
+                            ptsOffset.seconds, micClock.seconds, micOffset.seconds))
         }
         guard let r = retimed(sb, by: micOffset) else { return }
         mainWriter?.appendMic(r)
